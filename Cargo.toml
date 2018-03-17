@@ -1,0 +1,6 @@
+[package]
+name = "okofdb"
+version = "0.1.0"
+authors = ["Lukas Bergdoll <lukas.bergdoll@gmail.com>"]
+
+[dependencies]
