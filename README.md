@@ -52,7 +52,9 @@ Add [this crate](https://crates.io/crates/okofdb) to your project.
 Rust toolchain and cargo.
 
 Note, some filesystems might struggle with a lot of files in a single directory,
-which will happen if there are many keys. One key == One File.
+which will happen if there are many keys.
+
+One key == One File.
 
 ### Installing
 
