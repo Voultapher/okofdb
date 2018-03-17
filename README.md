@@ -18,8 +18,28 @@ Depending on your use case, possibly a very stupid way of storing your data.
 ## Example
 
 ```rust
-fn test() {
+extern crate okofdb;
 
+use okofdb::okof;
+use std::path::Path;
+
+fn main() {
+    let path = Path::new("dbdir");
+    let key = "test";
+    let value = b"Hello, world!";
+
+    okof::write(&path, &key, value).unwrap();
+    assert_eq!(okof::read(&path, &key).unwrap(), value);
+
+    let other_value = String::from("Other value");
+    okof::write(&path, &key, other_value.as_bytes()).unwrap();
+    assert_eq!(okof::read(&path, &key).unwrap(), other_value.as_bytes());
+
+    okof::delete(&path, &key).unwrap();
+    match okof::read(&path, &key) {
+        Err(okof::Error::NotFound) => (),
+        _ => { assert!(false); },
+    }
 }
 ```
 
