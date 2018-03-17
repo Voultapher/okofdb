@@ -1,3 +1,5 @@
+extern crate snap;
+
 pub mod okof;
 
 #[cfg(test)]
@@ -12,6 +14,16 @@ mod tests {
         let key = "key";
         let value = [0, 1, 2];
         let tmp_dir = TempDir::new("write_new").unwrap();
+
+        okof::write(&tmp_dir.path(), &key, &value).unwrap();
+        assert_eq!(okof::read(&tmp_dir.path(), &key).unwrap(), &value);
+    }
+
+    #[test]
+    fn write_empty() {
+        let key = "key";
+        let value = [];
+        let tmp_dir = TempDir::new("write_empty").unwrap();
 
         okof::write(&tmp_dir.path(), &key, &value).unwrap();
         assert_eq!(okof::read(&tmp_dir.path(), &key).unwrap(), &value);
@@ -34,7 +46,7 @@ mod tests {
     #[test]
     fn write_big() {
         let key = "key";
-        let mut value = vec![1; 100000];
+        let mut value = vec![1; 100_000];
         value[0] = 7;
         let len = value.len();
         value[len - 1] = 7;
@@ -46,7 +58,7 @@ mod tests {
 
     #[test]
     fn write_many() {
-        let size = 10000;
+        let size = 10_000;
         let tmp_dir = TempDir::new("write_many").unwrap();
         let path = tmp_dir.path();
 
@@ -60,21 +72,28 @@ mod tests {
         }
     }
 
-    /*#[test]
+    #[test]
     fn write_compressed() {
         let key = "key";
-        let mut value = vec![1; 100000];
+        let mut value = vec![1; 100_000];
         value[0] = 7;
         let len = value.len();
         value[len - 1] = 7;
         let tmp_dir = TempDir::new("write_compressed").unwrap();
 
-        okof::write(&tmp_dir.path(), &key, &value.as_slice().unwrap();
+        okof::write(&tmp_dir.path(), &key, value.as_slice()).unwrap();
         assert_eq!(okof::read(&tmp_dir.path(), &key).unwrap(), value);
 
-        let file = okof::get_raw_file(&tmp_dir.path(), &key);
-        assert!(file.size() < (value.len() / 2))
-    }*/
+        let file = okof::get_raw_file(&tmp_dir.path(), &key).unwrap();
+        let expected_max_size = (value.len() / 20) as u64;
+        assert!(file.metadata().unwrap().len() <= expected_max_size);
+
+        let small_value = b"Small string";
+        okof::write(&tmp_dir.path(), &key, small_value).unwrap();
+        let file = okof::get_raw_file(&tmp_dir.path(), &key).unwrap();
+        let small_expected_max_size = (small_value.len() as u64) + 1;
+        assert!(file.metadata().unwrap().len() <= small_expected_max_size);
+    }
 
     #[test]
     fn delete() {

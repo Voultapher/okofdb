@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["Lukas Bergdoll <lukas.bergdoll@gmail.com>"]
 
 [dependencies]
+snap = "0.2.4"
 
 [dev-dependencies]
 tempdir = "0.3.6"

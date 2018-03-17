@@ -1,3 +1,4 @@
+use snap;
 use std::convert::From;
 use std::fs;
 use std::io;
@@ -22,6 +23,8 @@ impl From<io::Error> for Error {
     }
 }
 
+const MIN_COMPRESS_SIZE: usize = 2_048;
+
 /// Get raw file associated with key in read only mode
 pub fn get_raw_file(dir: &Path, key: &str) -> Result<fs::File, Error> {
     if !dir.is_dir() {
@@ -43,10 +46,16 @@ pub fn write(dir: &Path, key: &str, value: &[u8]) -> Result<(), Error> {
         return Err(Error::NotDir);
     }
 
-    // TODO compress value with snap
-
     let mut file = fs::File::create(dir.join(key))?;
-    file.write_all(&value)?;
+    if value.len() >= MIN_COMPRESS_SIZE {
+        file.write_all(&[1])?; // store compression info
+        let mut wtr = snap::Writer::new(file);
+        wtr.write_all(&value)?;
+    } else {
+        file.write_all(&[0])?; // store compression info
+        file.write_all(&value)?;
+    }
+
     Ok(())
 }
 
@@ -63,10 +72,17 @@ pub fn read_into(dir: &Path, key: &str, mut buf: &mut Vec<u8>) -> Result<(), Err
     if !buf.is_empty() {
         return Err(Error::NotEmpty);
     }
-    
-    let mut file = get_raw_file(&dir, &key)?;
 
-    file.read_to_end(&mut buf)?;
+    let mut file = get_raw_file(&dir, &key)?;
+    let mut is_compressed = [0];
+    file.read_exact(&mut is_compressed)?;
+    if is_compressed[0] == 0 {
+        file.read_to_end(&mut buf)?;
+    } else {
+        let mut rdr = snap::Reader::new(file);
+        rdr.read_to_end(&mut buf)?;
+    }
+
     Ok(())
 }
 

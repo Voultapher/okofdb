@@ -15,6 +15,9 @@ If you need multiple concurrent writers,
 synchronization is your applications responsibility.
 Depending on your use case, possibly a very stupid way of storing your data.
 
+Above an implementation defined value size threshold it will use
+[snap](https://crates.io/crates/snap) to compress the value.
+
 ## Example
 
 ```rust
