@@ -1,11 +1,11 @@
-extern crate tempdir;
-
 pub mod okof;
 
 #[cfg(test)]
 mod tests {
+    extern crate tempdir;
+
     use okof;
-    use tempdir::TempDir;
+    use self::tempdir::TempDir;
 
     #[test]
     fn write_new() {
@@ -87,8 +87,8 @@ mod tests {
 
         assert!(okof::delete(&tmp_dir.path(), &key).is_ok());
 
-        match okof::read(&tmp_dir.path(), &key).err().unwrap() {
-            okof::Error::NotFound => (),
+        match okof::read(&tmp_dir.path(), &key) {
+            Err(okof::Error::NotFound) => (),
             _ => { assert!(false); },
         }
     }
@@ -99,8 +99,8 @@ mod tests {
         let tmp_dir = TempDir::new("write_append").unwrap();
 
         // this is retarted
-        match okof::read(&tmp_dir.path(), &key).err().unwrap() {
-            okof::Error::NotFound => (),
+        match okof::read(&tmp_dir.path(), &key) {
+            Err(okof::Error::NotFound) => (),
             _ => { assert!(false); },
         }
     }
@@ -117,25 +117,25 @@ mod tests {
         let tmp_dir = TempDir::new("invalid_use").unwrap();
         let file_path = tmp_dir.path().join("test_file");
 
-        match okof::write(&file_path, &key, &value).err().unwrap() {
-            okof::Error::NotDir => (),
+        match okof::write(&file_path, &key, &value) {
+            Err(okof::Error::NotDir) => (),
             _ => { assert!(false); },
         }
 
-        match okof::read(&file_path, &key).err().unwrap() {
-            okof::Error::NotDir => (),
+        match okof::read(&file_path, &key) {
+            Err(okof::Error::NotDir) => (),
             _ => { assert!(false); },
         }
 
-        match okof::delete(&file_path, &key).err().unwrap() {
-            okof::Error::NotDir => (),
+        match okof::delete(&file_path, &key) {
+            Err(okof::Error::NotDir) => (),
             _ => { assert!(false); },
         }
 
         let mut non_empty_buffer = vec![1, 2, 3];
         let path = tmp_dir.path();
-        match okof::read_into(&path, &key, &mut non_empty_buffer).err().unwrap() {
-            okof::Error::NotEmpty => (),
+        match okof::read_into(&path, &key, &mut non_empty_buffer) {
+            Err(okof::Error::NotEmpty) => (),
             _ => { assert!(false); },
         }
     }
