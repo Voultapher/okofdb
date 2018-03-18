@@ -1,9 +1,10 @@
 [package]
 name = "okofdb"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Lukas Bergdoll <lukas.bergdoll@gmail.com>"]
 description = "One Key One File Database"
 keywords = ["key-value-store", "kv", "database", "db", "okofdb"]
+documentation = "https://docs.rs/okofdb"
 repository = "https://github.com/Voultapher/okofdb"
 license = "Apache-2.0"
 readme="README.md"
