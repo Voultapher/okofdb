@@ -21,8 +21,6 @@ Above an implementation defined value size threshold it will use
 ## Example
 
 ```rust
-extern crate okofdb;
-
 use okofdb::okof;
 use std::path::Path;
 
