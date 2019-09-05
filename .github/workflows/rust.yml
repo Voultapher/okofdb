@@ -6,10 +6,10 @@ jobs:
   build:
 
     runs-on: ${{ matrix.os }}
-    
+
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest, windows-latest] # No mac os support rn.
 
     steps:
     - uses: actions/checkout@v1
