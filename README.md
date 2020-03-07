@@ -21,25 +21,25 @@ Above an implementation defined value size threshold it will use
 ## Example
 
 ```rust
-use okofdb::okof;
 use std::path::Path;
+use okofdb::okof;
 
-fn main() {
-    let path = Path::new("dbdir");
-    let key = "test";
-    let value = b"Hello, world!";
+fn main() -> Result<(), okof::Error> {
+    let path = Path::new("db-dir");
+    let key = "plants";
+    let value = b"Cucumber:Fluxroot";
 
-    okof::write(&path, &key, value).unwrap();
-    assert_eq!(okof::read(&path, &key).unwrap(), value);
+    okof::write(&path, &key, value)?;
+    assert_eq!(okof::read(&path, &key)?, value);
 
-    let other_value = String::from("Other value");
-    okof::write(&path, &key, other_value.as_bytes()).unwrap();
-    assert_eq!(okof::read(&path, &key).unwrap(), other_value.as_bytes());
+    let other_value = String::from("Ironwood");
+    okof::write(&path, &key, other_value.as_bytes())?;
+    assert_eq!(okof::read(&path, &key)?, other_value.as_bytes());
 
-    okof::delete(&path, &key).unwrap();
+    okof::delete(&path, &key)?;
     match okof::read(&path, &key) {
-        Err(okof::Error::NotFound) => (),
-        _ => { assert!(false); },
+        Err(okof::Error::NotFound) => Ok(()),
+        _ => { panic!(); },
     }
 }
 ```
